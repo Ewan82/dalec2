@@ -72,7 +72,7 @@ import plot as p
 
 d2 = dc.DalecData(1999, 2013, 'nee')
 
-ax, fig = p.plot_4dvar('nee', d2, xb=d.xb, xa=assimilation_results[0], awindl=d.len_ren)
+ax, fig = p.plot_4dvar('nee', d2, xb=d.xb, xa=assimilation_results[0], awindl=d.len_run)
 
 fig.savefig('~/example_directory/nee_assimilation.pdf')
 
@@ -81,7 +81,7 @@ displayed as a blue line, the analysis or posterior model trajectory a green lin
 dots in both the assimilation window and the forecast period (before and after the dotted line). If we just want to
 display the plot in python we can type the following:
 
-ax, fig = p.plot_4dvar('nee', d2, xb=d.xb, xa=assimilation_results[0], awindl=d.len_ren)
+ax, fig = p.plot_4dvar('nee', d2, xb=d.xb, xa=assimilation_results[0], awindl=d.len_run)
 
 import matplotlib.pyplot as plt
 
