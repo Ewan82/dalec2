@@ -52,7 +52,7 @@ import mod_class as mc
 
 m = mc.DalecModel(d)
 
-assimilation_results = find_min_tnc(d.xb)
+assimilation_results = m.find_min_tnc(d.xb)
 
 So here we have decided on a single years assimilation window with observations of NEE, then created our model class
 using this data and then started an assimilation where we have specified d.xb as our prior model guess to the initial
