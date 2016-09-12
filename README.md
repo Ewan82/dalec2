@@ -116,7 +116,7 @@ import plot as p
 
 d2 = dc.DalecData(1999, 2013, 'nee')
 
-ax, fig = p.plot_4dvar('nee', d2, xb=d.xb, xa=xa, awindl=d.len_ren)
+ax, fig = p.plot_4dvar('nee', d2, xb=d.xb, xa=xa, awindl=d.len_run)
 
 import matplotlib.pyplot as plt
 
