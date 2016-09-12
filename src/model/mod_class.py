@@ -759,7 +759,7 @@ class DalecModel():
                                  disp=dispp, fmin=mini, maxfun=maxits, ftol=f_tol)
         return find_min
 
-    def find_min_tnc_cvt(self, pvals, f_name, bnds='strict', dispp=5, maxits=1000,
+    def find_min_tnc_cvt(self, pvals, f_name='None', bnds='strict', dispp=5, maxits=1000,
                          mini=0, f_tol=1e-4):
         """Function which minimizes 4DVAR cost fn. Takes an initial state
         (pvals).
@@ -774,7 +774,8 @@ class DalecModel():
                                  fprime=self.grad_cost_lagrange_cvt, bounds=bnds,
                                  disp=dispp, fmin=mini, maxfun=maxits, ftol=f_tol)
         xa = self.zvals2pvals(find_min[0])
-        self.pickle_exp(pvals, find_min, xa, f_name)
+        if f_name != 'None':
+            self.pickle_exp(pvals, find_min, xa, f_name)
         return find_min, xa
 
     def findminglob(self, pvals, meth='TNC', bnds='strict', it=300,
@@ -895,6 +896,13 @@ class DalecModel():
         return 'Observations and error dictionaries pickled!'
 
     def pickle_exp(self, xb, assim_res, xa, f_name):
+        """ Pickles experiment values.
+        :param xb:
+        :param assim_res:
+        :param xa:
+        :param f_name:
+        :return:
+        """
         exp = {}
         exp['obs'] = self.dC.ob_dict
         exp['obs_err'] = self.dC.ob_err_dict

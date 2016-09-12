@@ -1,5 +1,6 @@
 # ------------------------------------------------------------------------------
 # DALEC2 model (Bloom and Williams 2015)
+# Code by Ewan Pinnington: ewan.pinnington@gmail.com
 # ------------------------------------------------------------------------------
 
 This project is written in object oriented Python, using classes to extract data from a csv file and run the DALEC2
@@ -58,15 +59,71 @@ So here we have decided on a single years assimilation window with observations 
 using this data and then started an assimilation where we have specified d.xb as our prior model guess to the initial
 state and parameters of the system. This will then return the results from our minimiztion using the observations and
 prior information, giving us the minimum of the cost function or the analysis (xa), which provide the best fit to the
-assimilated observation and prior information.
+assimilated observation and prior information. The form of the returned results is a tuple containing the analysis xa
+the number of funtion iterations to converge to the minimum and the pass code for the minimum (xa, iterations, code).
+For more information please see, http://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.optimize.fmin_tnc.html
 
 
 PLOTTING:
-There are a few plotting functions in the plot.py file for plotting observation and data time series and assimilation
-results, for more information please read through the plotting function doc strings.
+In order to plot the results we find from the assimilation as a time series of assimilation and forecast we use
+functions from the plot.py file. If we continue on from the previous example we have the following:
+
+import plot as p
+
+d2 = dc.DalecData(1999, 2013, 'nee')
+
+ax, fig = p.plot_4dvar('nee', d2, xb=d.xb, xa=assimilation_results[0], awindl=d.len_ren)
+
+fig.savefig('~/example_directory/nee_assimilation.pdf')
+
+This will save our plot to an example directory as a pdf. Here the prior or background model trajectory will be
+displayed as a blue line, the analysis or posterior model trajectory a green line and the observations will be orange
+dots in both the assimilation window and the forecast period (before and after the dotted line). If we just want to
+display the plot in python we can type the following:
+
+ax, fig = p.plot_4dvar('nee', d2, xb=d.xb, xa=assimilation_results[0], awindl=d.len_ren)
+
+import matplotlib.pyplot as plt
+
+plt.show()
+
+This will bring up the plot in the python sessions. There are a few other plotting functions in the plot.py file for
+plotting observation and data time series and assimilation results, for more information please read through the
+plotting function doc strings.
 
 
-Please contact: ewan.pinnington@gmail.com with any queries.
+Control Variable Transform Assimilation:
+As the assimilation and manipulation of large matrices can become ill-conditioned for larger problems, we have also
+implemented a control variable transform assimilation routine to pre-condition the problem. This is run in much the
+same way as the original assimilation. However an extra argument can be called that will pickle the assimilation results
+as a dictionary to a specified file. To run this we would type the following:
+
+import data_class as dc
+
+d = dc.DalecData(1999, 2000, 'nee')
+
+import mod_class as mc
+
+m = mc.DalecModel(d)
+
+file_name_to_pickle_results = '~/example_directory/assimilation_results_nee_99_00.p'
+
+assimilation_results_cvt, xa = m.find_min_tnc_cvt(d.xb, f_name=file_name_to_pickle_results)
+
+We could then again plot the assimilation time series by typing:
+
+import plot as p
+
+d2 = dc.DalecData(1999, 2013, 'nee')
+
+ax, fig = p.plot_4dvar('nee', d2, xb=d.xb, xa=xa, awindl=d.len_ren)
+
+import matplotlib.pyplot as plt
+
+plt.show()
+
+
+Please contact: ewan.pinnington@gmail.com with any queries or issues.
 
 
 
