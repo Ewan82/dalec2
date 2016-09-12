@@ -14,6 +14,11 @@ import seaborn as sns
 
 
 def plot_drive_dat(dat, dC):
+    """Plots specified driving data from data class, dC.
+    :param dat: observation string from drive_dat dictionary
+    :param dC: DalecData class from data_class.py
+    :return: ax and fig object for plot
+    """
     """Plots specified driving data from data class, dC. Takes an
     observation string, a dataClass (dC) and a start and finish point.
     """
@@ -31,8 +36,10 @@ def plot_drive_dat(dat, dC):
 
 
 def plot_ob_dict(ob, dC):
-    """Plots a specified observation from the observation dictionary in a data class, dC. Takes an
-    observation string, a dataClass (dC).
+    """Plots a specified observation from the observation dictionary in a data class, dC.
+    :param ob: observation string corresponding to an observation from the ob_dict data class object
+    :param dC: DalecData class from data_class.py
+    :return: ax and fig object for plot
     """
     sns.set_context(rc={'lines.linewidth': 0.8, 'lines.markersize': 6})
     fig, ax = plt.subplots(nrows=1, ncols=1)
@@ -47,6 +54,12 @@ def plot_ob_dict(ob, dC):
 
 
 def plot_obs(ob, pvals, dC):
+    """Plots a specified observation using obs eqn in mod_class module for a data class dC.
+    :param ob: observation string corresponding to an observation in mod_class modobdict
+    :param pvals: initial state and parameter values for which to run the model and generate modelled observations
+    :param dC: DalecData class from data_class.py
+    :return: ax and fig object for plot
+    """
     """Plots a specified observation using obs eqn in mod_class module. Takes an
     observation string, a dataClass (dC).
     """
@@ -72,14 +85,22 @@ def plot_obs(ob, pvals, dC):
 
 def plot_4dvar(ob, dC, xb=None, xa=None, erbars=1, awindl=None, obdict_a=None):
     """Plots a model predicted observation value for two initial states (xb and xa)
-    and also the actual observations taken of the physical quantity. Takes a ob
-    string, two initial states (xb,xa), a dataClass and a start and finish
-    time step.
+    and also the actual observations taken of the physical quantity (if available).
+    :param ob: observation string corresponding to an observation in mod_class modobdict
+    :param dC: DalecData class from data_class.py corresponding to length of data to be plotted
+    :param xb: prior parameter and initial state values to plot initial model trajectory with
+    :param xa: posterior parameter and initial state values to plot model trajectory after assimilation
+    :param erbars: true or false value, to turn error bars on or off
+    :param awindl: length of assimilation window as int in days, will plot a vertical line to show assimilation and
+    forecast period
+    :param obdict_a: If a different observation dictionary is required this can be specified here.
+    :return: ax and fig object for plot
     """
-    sns.set_context(rc={'lines.linewidth':.8, 'lines.markersize':6})
+    sns.set_context(rc={'lines.linewidth': 0.8, 'lines.markersize': 6})
     fig, ax = plt.subplots(nrows=1, ncols=1)
     m = mc.DalecModel(dC)
     palette = sns.color_palette("colorblind", 11)
+
     if xb != None:
         mod_lst = m.mod_list(xb)
         obs_lst = m.oblist(ob, mod_lst)
@@ -97,6 +118,7 @@ def plot_4dvar(ob, dC, xb=None, xa=None, erbars=1, awindl=None, obdict_a=None):
                          fmt='o', label=ob+'_o', color=palette[2], alpha=0.7)
         else:
             ax.plot(dC.dates, ob_dict[ob], 'o', label=ob+'_o', color=palette[2])
+
     if obdict_a != None:
         ax.plt.plot(dC.dates, obdict_a[ob], 'o')
 
@@ -111,10 +133,14 @@ def plot_4dvar(ob, dC, xb=None, xa=None, erbars=1, awindl=None, obdict_a=None):
 
 
 def plotscatterobs(ob, pvals, dC, awindl, bfa='a'):
-    """Plots scatter plot of obs vs model predicted values. Takes an initial
-    parameter set, a dataClass (must have only desired ob for comparison
-    specified in dC), assimilation window length and whether a comparison of
-    background 'b', forecast 'f' or analysis 'a' is desired.
+    """Plots scatter plot of obs vs model predicted values.
+    :param ob: observation string corresponding to an observation in mod_class modobdict
+    :param pvals: parameter and initial state values for generating modelled observations to judge against actual obs
+    :param dC: DalecData class from data_class.py corresponding to length of data required
+    :param awindl: Length of assimilation window in days as int
+    :param bfa: string either 'b', 'f' or 'a'. Will compare observations to modelled observations in assimilation
+    window ('b' or 'a') or in forecast period ('f').
+    :return: ax and fig object for plot
     """
     sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth': 1., 'lines.markersize': 6.})
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10, 10))
@@ -125,23 +151,33 @@ def plotscatterobs(ob, pvals, dC, awindl, bfa='a'):
     obs_lst = m.oblist(ob, mod_lst)
     y_obs = dC.ob_dict[ob]
     plt_ob_lst = (y_obs/y_obs)*obs_lst
-    one_one = np.arange(int(min(min(y_obs[np.isnan(y_obs) != True]), min(plt_ob_lst[np.isnan(y_obs) != True]))),
-                        int(max(max(y_obs[np.isnan(y_obs) != True]), max(plt_ob_lst[np.isnan(y_obs) != True]))))
-    plt.plot(one_one, one_one, color=palette[0])
     if bfa == 'b' or bfa == 'a':
-        ax.plot(y_obs[0:awindl], plt_ob_lst[0:awindl], 'o', color=palette[1])
-        error = np.sqrt(np.nansum((y_obs[0:awindl] - plt_ob_lst[0:awindl])**2)/len(y_obs[0:awindl]))
-        yhx = np.nanmean(y_obs[0:awindl] - plt_ob_lst[0:awindl])
+        selection = xrange(0, awindl)
     elif bfa == 'f':
-        ax.plot(y_obs[awindl:], plt_ob_lst[awindl:], 'o', color=palette[1])
-        error = np.sqrt(np.nansum((y_obs[awindl:] - plt_ob_lst[awindl:])**2)/len(y_obs[awindl:]))
-        yhx = np.nanmean(y_obs[awindl:] - plt_ob_lst[awindl:])
+        selection = xrange(awindl, len(obs_lst))
     else:
         raise Exception('Please check function input for bfa variable')
+    ob_lst = plt_ob_lst[selection][np.isnan(y_obs[selection]) != True]
+    y_obs = y_obs[selection][np.isnan(y_obs[selection]) != True]
+
+    one_one = np.arange(int(min(min(y_obs), min(ob_lst))),int(max(max(y_obs), max(ob_lst))))
+    plt.plot(one_one, one_one, color=palette[0])
+
+    ax.plot(y_obs, ob_lst, 'o', color=palette[1])
+    error = np.sqrt(np.sum((y_obs - ob_lst)**2) / len(y_obs))
+    yhx = np.mean(y_obs - ob_lst)
+    mod_obs_bar = np.mean(ob_lst)
+    std_mod_obs = np.nanstd(ob_lst)
+    obs_bar = np.mean(y_obs)
+    std_obs = np.std(y_obs)
+    rms = np.sqrt(np.sum([((ob_lst[x]-mod_obs_bar)-(y_obs[x]-obs_bar))**2 for x in range(len(y_obs))]) / len(y_obs))
+    corr_coef = (np.sum([((ob_lst[x]-mod_obs_bar)*(y_obs[x]-obs_bar)) for x in range(len(y_obs))]) / len(y_obs)) / \
+                (std_mod_obs*std_obs)
+
     plt.xlabel(ob.upper()+r' observations (g C m$^{-2}$ day$^{-1}$)')
     plt.ylabel(ob.upper()+' model (g C m$^{-2}$ day$^{-1}$)')
-    #plt.title(bfa+'_error=%f, mean(y-hx)=%f' %(error,yhx))
-    print bfa+'_error=%f, mean(y-hx)=%f' %(error, yhx)
+    plt.title('mean(y-hx)=%.2f, rms=%.2f, corr_coef=%.2f' %( yhx, rms, corr_coef))
+    print bfa+'_error=%f, mean(y-hx)=%f, rms=%f, corr_coef=%f' %(error, yhx, rms, corr_coef)
     #plt.xlim((-20, 15))
     #plt.ylim((-20, 15))
     return ax, fig
