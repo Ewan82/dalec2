@@ -1,11 +1,10 @@
 
 ------------------------------------------------------------------------------
 # DALEC2 model (Bloom and Williams 2015)
-# Code by Ewan Pinnington: ewan.pinnington@gmail.com
 ------------------------------------------------------------------------------
 
 This project is written in object oriented Python, using classes to extract data from a csv file and run the DALEC2
-model.
+model. Code by Ewan Pinnington: ewan.pinnington@gmail.com
 
 
 #DATA:
