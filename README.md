@@ -4,7 +4,9 @@
 ------------------------------------------------------------------------------
 
 This project is written in object oriented Python, using classes to extract data from a csv file and run the DALEC2
-model. Code by Ewan Pinnington: ewan.pinnington@gmail.com
+model. 
+Code by Ewan Pinnington: ewan.pinnington@gmail.com. 
+Used in Pinnington et al. 2016 paper: http://www.sciencedirect.com/science/article/pii/S016819231630332X
 
 
 #DATA
